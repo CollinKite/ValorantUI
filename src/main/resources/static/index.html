@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script type="text/javascript">
+        
+        //Agent Methods
+        function createAgent() {
+            let id = document.getElementById("agent_id").value;
+            let name = document.getElementById("agent_name").value;
+            let role = document.getElementById("agent_role").value;
+            var entry = {
+            "id": id,
+            "name": name,
+            "role": role
+            };
+
+            //ajax
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("POST", "http://localhost:8080/agent");
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in posting entry");
+                    getAgentEntries();
+                }
+            }
+            xmlHttp.send(JSON.stringify(entry));
+        }
+        function updateAgent() {
+            var id = document.getElementById("agent_id").value;
+            var name = document.getElementById("agent_name").value;
+            let role = document.getElementById("agent_role").value;
+            var entry = {
+                "id": id,
+                "name": name,
+                "role": role
+            }
+            //ajax
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("PUT", "http://localhost:8080/agent/" + id);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in posting entry");
+                    getAgentEntries();
+                }
+            }
+            xmlHttp.send(JSON.stringify(entry));
+        }
+        function getAgentEntries() {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entries = JSON.parse(this.responseText);
+                    renderAgentEntries(entries);
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/agent", true);
+            xmlHttp.send();
+        }
+        function renderAgentEntries(entries) {
+            var entry_list = document.getElementById("agent_list");
+            entry_list.innerHTML = "";
+            for (var entry of entries) {
+                var entry_html = "<li>" + entry.id + ": " + entry.name + " - " + entry.role + "</li>";
+                entry_list.innerHTML += entry_html;
+            }
+            agent_id.value = "";
+            agent_name.value = "";
+            agent_role.value = "";
+            find_id.value = "";
+        }
+        function findAgent() {
+            console.log("find");
+            var id = document.getElementById("find_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entry = JSON.parse(this.responseText);
+                    agent_id.value = entry.id;
+                    agent_name.value = entry.name;
+                    agent_role.value = entry.role;
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/agent/" + id, true);
+            xmlHttp.send();
+        }
+        function deleteAgentEntry() {
+            console.log("into delete");
+            var id = document.getElementById("find_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("DELETE", "http://localhost:8080/agent/" + id);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in deleting entry");
+                    getAgentEntries();
+                }
+            }
+            xmlHttp.send(); //don't really need to send
+        }
+        
+        //Weapon Methods
+        function createWeapon() {
+        let id = document.getElementById("weapon_id").value;
+        let name = document.getElementById("weapon_name").value;
+        let type = document.getElementById("weapon_type").value;
+        let cost = document.getElementById("weapon_cost").value;
+        var entry = {
+        "id": id,
+        "name": name,
+        "type": type,
+        "cost": cost
+        };
+
+    //ajax
+    var xmlHttp = new XMLHttpRequest();
+    xmlHttp.open("POST", "http://localhost:8080/weapon");
+    xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.onreadystatechange = function() {
+        console.log("ready state: ", this.status);
+        if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+            //the entry was created
+            console.log("success in posting entry");
+            getWeaponEntries();
+        }
+    }
+    xmlHttp.send(JSON.stringify(entry));
+}     
+        function updateWeapon() {
+            let id = document.getElementById("weapon_id").value;
+            let name = document.getElementById("weapon_name").value;
+            let type = document.getElementById("weapon_type").value;
+            let cost = document.getElementById("weapon_cost").value;
+            var entry = {
+            "id": id,
+            "name": name,
+            "type": type,
+            "cost": cost
+            };
+            //ajax
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("PUT", "http://localhost:8080/weapon/" + id);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in posting entry");
+                    getWeaponEntries();
+                }
+            }
+            xmlHttp.send(JSON.stringify(entry));
+        }
+        function getWeaponEntries() {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entries = JSON.parse(this.responseText);
+                    renderWeaponEntries(entries);
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/weapon", true);
+            xmlHttp.send();
+        }
+        function renderWeaponEntries(entries) {
+            var entry_list = document.getElementById("weapon_list");
+            entry_list.innerHTML = "";
+            for (var entry of entries) {
+                var entry_html = "<li>" + entry.id + ": " + entry.name + " - " + entry.cost + " " + entry.type + "</li>";
+                entry_list.innerHTML += entry_html;
+            }
+            weapon_id.value = "";
+            weapon_name.value = "";
+            weapon_cost.value = "";
+            weapon_type.value = "";
+            find_weapon_id.value = "";
+        }
+        function findWeapon() {
+            console.log("find");
+            var id = document.getElementById("find_weapon_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entry = JSON.parse(this.responseText);
+                    weapon_id.value = entry.id;
+                    weapon_name.value = entry.name;
+                    weapon_cost.value = entry.cost;
+                    weapon_type.value = entry.type;
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/weapon/" + id, true);
+            xmlHttp.send();
+        }
+        function deleteWeaponEntry() {
+            console.log("into delete");
+            var id = document.getElementById("find_weapon_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("DELETE", "http://localhost:8080/weapon/" + id);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in deleting entry");
+                    getWeaponEntries();
+                }
+            }
+            xmlHttp.send(); //don't really need to send
+        }       
+        
+        //Map Methods
+        function createMap() {
+                let id = document.getElementById("map_id").value;
+                let name = document.getElementById("map_name").value;
+                let sites = document.getElementById("map_sites").value;
+                var entry = {
+                "id": id,
+                "name": name,
+                "numOfSites": sites
+                };
+
+            //ajax
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("POST", "http://localhost:8080/map");
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in posting entry");
+                    getMapEntries();
+                }
+            }
+            xmlHttp.send(JSON.stringify(entry));
+        }
+        function updateMap() {
+            let id = document.getElementById("map_id").value;
+            let name = document.getElementById("map_name").value;
+            let sites = document.getElementById("map_sites").value;
+            var entry = {
+            "id": id,
+            "name": name,
+            "numOfSites": sites
+            };
+            //ajax
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("PUT", "http://localhost:8080/map/" + id);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in posting entry");
+                    getMapEntries();
+                }
+            }
+            xmlHttp.send(JSON.stringify(entry));
+        }
+        function getMapEntries() {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entries = JSON.parse(this.responseText);
+                    renderMapEntries(entries);
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/map", true);
+            xmlHttp.send();
+        }
+        function renderMapEntries(entries) {
+            var entry_list = document.getElementById("map_list");
+            entry_list.innerHTML = "";
+            for (var entry of entries) {
+                var entry_html = "<li>" + entry.id + ": " + entry.name + " - " + entry.numOfSites + "</li>";
+                entry_list.innerHTML += entry_html;
+            }
+            map_id.value = "";
+            map_name.value = "";
+            map_sites.value = "";
+            find_map_id.value = "";
+        }
+        function findMap() {
+            console.log("find");
+            var id = document.getElementById("find_map_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entry = JSON.parse(this.responseText);
+                    map_id.value = entry.id;
+                    map_name.value = entry.name;
+                    map_sites.value = entry.numOfSites;
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/map/" + id, true);
+            xmlHttp.send();
+        }
+        function deleteMapEntry() {
+            console.log("into delete");
+            var id = document.getElementById("find_map_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("DELETE", "http://localhost:8080/map/" + id);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    console.log("success in deleting entry");
+                    getMapEntries();
+                }
+            }
+            xmlHttp.send(); //don't really need to send
+        }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+window.onload = function() { getAgentEntries();getWeaponEntries();getMapEntries(); }
+    </script>
+    <style>
+    body {font-family: Arial;}
+    
+    /* Style the tab */
+    .tab {
+      overflow: hidden;
+      border: 1px solid #ccc;
+      background-color: #f1f1f1;
+    }
+    
+    /* Style the buttons inside the tab */
+    .tab button {
+      background-color: inherit;
+      float: left;
+      border: none;
+      outline: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      transition: 0.3s;
+      font-size: 17px;
+    }
+    
+    /* Change background color of buttons on hover */
+    .tab button:hover {
+      background-color: #ddd;
+    }
+    
+    /* Create an active/current tablink class */
+    .tab button.active {
+      background-color: #ccc;
+    }
+    
+    /* Style the tab content */
+    .tabcontent {
+      display: none;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-top: none;
+    }
+    </style>
+    </head>
+    <body>
+    
+    <div class="tab">
+      <button class="tablinks" onclick="openTab(event, 'Agents')">Agents</button>
+      <button class="tablinks" onclick="openTab(event, 'Weapons')">Weapons</button>
+      <button class="tablinks" onclick="openTab(event, 'Maps')">Maps</button>
+    </div>
+    
+    <div id="Agents" class="tabcontent">
+        <h3>Agents</h3>
+        <div>
+            <ul id="agent_list"></ul>
+        </div>
+        <div>
+            <label>ID:</label>
+            <input type="text" id="agent_id" />
+            <br/>
+            <label>Name:</label>
+            <input type="text" id="agent_name" />
+            <br>
+            <select name="agents" id="agent_role">
+                <option value="Duelist">Duelist</option>
+                <option value="Initiator">Initiator</option>
+                <option value="Controller">Controller</option>
+                <option value="Sentinel">Sentinel</option>
+              </select>
+            <button onclick="createAgent();">Add Entry</button>
+            <button onclick="updateAgent();">Update Entry</button>
+            <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_id" />
+            <button onclick="findAgent();">Find</button>
+            <button onclick="deleteAgentEntry();">Delete</button>
+        </div>
+    </div>
+    
+    <div id="Weapons" class="tabcontent">
+      <h3>Weapons</h3>
+      <div>
+        <ul id="weapon_list"></ul>
+    </div>
+    <div>
+    
+            <label>ID:</label>
+            <input type="text" id="weapon_id" />
+            <br>
+            <label>Weapon Name</label>
+            <input type="text" id="weapon_name"/>
+            <br>
+            <label>Weapon Cost</label>
+            <input type="number" id="weapon_cost"/>
+            <br>
+            <select name="agents" id="weapon_type">
+                <option value="PRIMARY">Primary</option>
+                <option value="SECONDARY">Secondary</option>
+                <option value="MELEE">Melee</option>
+              </select>
+            <button onclick="createWeapon();">Add Entry</button>
+        <button onclick="updateWeapon();">Update Entry</button>
+        <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_weapon_id" />
+        <button onclick="findWeapon();">Find</button>
+        <button onclick="deleteWeaponEntry();">Delete</button>
+    
+    </div>
+    </div>
+    
+    <div id="Maps" class="tabcontent">
+      <h3>Maps</h3>
+      <div>
+        <ul id="map_list"></ul>
+    </div>
+    <div>
+    
+            <label>ID:</label>
+            <input type="text" id="map_id" />
+            <br>
+            <label>name</label>
+            <input type="text" id="map_name"/>
+            <br>
+            <label>Number of Sites</label>
+            <input type="number" id="map_sites"/>
+            <br>
+            <button onclick="createMap();">Add Entry</button>
+        <button onclick="updateMap();">Update Entry</button>
+        <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_map_id" />
+        <button onclick="findMap();">Find</button>
+        <button onclick="deleteMapEntry();">Delete</button>
+    
+    </div>
+    </div>
+    
+    <script>
+    function openTab(evt, cityName) {
+      var i, tabcontent, tablinks;
+      tabcontent = document.getElementsByClassName("tabcontent");
+      for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = "none";
+      }
+      tablinks = document.getElementsByClassName("tablinks");
+      for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(" active", "");
+      }
+      document.getElementById(cityName).style.display = "block";
+      evt.currentTarget.className += " active";
+    }
+    </script>
+</html>
