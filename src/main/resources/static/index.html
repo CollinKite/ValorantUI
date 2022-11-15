@@ -3,6 +3,39 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript">
+        let authHeaderValue = null;
+        //Login Stuff
+        function login(){
+            let username = document.getElementById("username").value;
+            let password = document.getElementById("password").value;
+            authHeaderValue = "Basic " + btoa(username + ":" + password);
+
+            let xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("GET", "http://localhost:8080/login");
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
+            xmlHttp.onreadystatechange = function() {
+                if (xmlHttp.readyState === XMLHttpRequest.DONE && this.status === 200) {
+                    console.log("Login successful");
+                    document.getElementById("lblMsg").innerHTML = "Welcome, " + username;
+                    showLoginForm(false);
+                }
+                else if (xmlHttp.readyState === XMLHttpRequest.DONE && this.status === 401) {
+                    console.log("Login failed");
+                    document.getElementById("lblMsg").innerHTML = "Invalid username or password";
+                    showLoginForm(true);
+                }
+            }
+            xmlHttp.send();
+        }
+
+        function showLoginForm(bTF) {
+            if(bTF) {
+                document.getElementById("frmLogin").style.visibility = "visible";
+            }
+            else {
+                document.getElementById("frmLogin").style.visibility = "hidden";
+            }
+        }
         
         //Agent Methods
         function createAgent() {
@@ -18,6 +51,7 @@
             //ajax
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("POST", "http://localhost:8080/agent");
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -41,6 +75,7 @@
             //ajax
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("PUT", "http://localhost:8080/agent/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -95,6 +130,7 @@
             var id = document.getElementById("find_id").value;
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("DELETE", "http://localhost:8080/agent/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -124,6 +160,7 @@
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open("POST", "http://localhost:8080/weapon");
     xmlHttp.setRequestHeader("Content-Type", "application/json");
+    xmlHttp.setRequestHeader("Authorization", authHeaderValue);
     xmlHttp.onreadystatechange = function() {
         console.log("ready state: ", this.status);
         if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
@@ -148,6 +185,7 @@
             //ajax
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("PUT", "http://localhost:8080/weapon/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -204,6 +242,7 @@
             var id = document.getElementById("find_weapon_id").value;
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("DELETE", "http://localhost:8080/weapon/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -230,6 +269,7 @@
             //ajax
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("POST", "http://localhost:8080/map");
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -253,6 +293,7 @@
             //ajax
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("PUT", "http://localhost:8080/map/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -307,6 +348,7 @@
             var id = document.getElementById("find_map_id").value;
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("DELETE", "http://localhost:8080/map/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
                 console.log("ready state: ", this.status);
@@ -321,20 +363,7 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-window.onload = function() { getAgentEntries();getWeaponEntries();getMapEntries(); }
+        window.onload = function() { getAgentEntries();getWeaponEntries();getMapEntries(); }
     </script>
     <style>
     body {font-family: Arial;}
@@ -465,20 +494,33 @@ window.onload = function() { getAgentEntries();getWeaponEntries();getMapEntries(
     
     </div>
     </div>
+
+    <div id="frmLogin">
+        <h3>Login:</h3>
+        <label>Username:</label>
+        <input type="text" id="username"/>
+
+        <label>Password:</label>
+        <input type="password" id="password"/>
+
+        <button onclick="login();">Login</button>
+    </div>
+    <div id ="lblMsg"></div>
     
-    <script>
-    function openTab(evt, cityName) {
-      var i, tabcontent, tablinks;
-      tabcontent = document.getElementsByClassName("tabcontent");
-      for (i = 0; i < tabcontent.length; i++) {
-        tabcontent[i].style.display = "none";
-      }
-      tablinks = document.getElementsByClassName("tablinks");
-      for (i = 0; i < tablinks.length; i++) {
-        tablinks[i].className = tablinks[i].className.replace(" active", "");
-      }
-      document.getElementById(cityName).style.display = "block";
-      evt.currentTarget.className += " active";
-    }
-    </script>
+        <script>
+            function openTab(evt, cityName) {
+              var i, tabcontent, tablinks;
+              tabcontent = document.getElementsByClassName("tabcontent");
+              for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+              }
+              tablinks = document.getElementsByClassName("tablinks");
+              for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+              }
+              document.getElementById(cityName).style.display = "block";
+              evt.currentTarget.className += " active";
+            }
+        </script>
+    </body>
 </html>
