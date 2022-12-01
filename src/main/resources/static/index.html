@@ -36,6 +36,143 @@
                 document.getElementById("frmLogin").style.visibility = "hidden";
             }
         }
+
+        //User Methods
+        function createUser() {
+            let id = document.getElementById("user_id").value;
+            let name = document.getElementById("user_name").value;
+            let password = document.getElementById("user_password").value;
+            let role = document.getElementById("user_role").value;
+            var entry = {
+            "id": id,
+            "name": name,
+            "password": password,
+            "access": role
+            };
+
+            //ajax
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("POST", "http://localhost:8080/user");
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    document.getElementById("lblMsg").innerHTML = "User created";
+                    getUserEntries();
+                }
+                else if (this.readyState == XMLHttpRequest.DONE && this.status == 401) {
+                    //the entry was not created
+                    document.getElementById("lblMsg").innerHTML = "You are not logged in";
+                }
+                else if (this.readyState == XMLHttpRequest.DONE && this.status == 403) {
+                    //the entry was not created
+                    document.getElementById("lblMsg").innerHTML = "You are not authorized to create a user";
+                }
+            }
+            xmlHttp.send(JSON.stringify(entry));
+        }
+        function updateUser() {
+            let id = document.getElementById("user_id").value;
+            let name = document.getElementById("user_name").value;
+            let password = document.getElementById("user_password").value;
+            let role = document.getElementById("user_role").value;
+            var entry = {
+            "id": id,
+            "name": name,
+            "password": password,
+            "access": role
+            };
+
+            //ajax
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("PUT", "http://localhost:8080/agent/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    document.getElementById("lblMsg").innerHTML = "User updated";
+                    getAgentEntries();
+                }
+                else if (this.readyState == XMLHttpRequest.DONE && this.status == 401) {
+                    //the entry was not created
+                    document.getElementById("lblMsg").innerHTML = "You are not logged in";
+                }
+                else if (this.readyState == XMLHttpRequest.DONE && this.status == 403) {
+                    //the entry was not created
+                    document.getElementById("lblMsg").innerHTML = "You are not authorized to update a user";
+                }
+            }
+            xmlHttp.send(JSON.stringify(entry));
+        }
+        function getUserEntries() {
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function() {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entries = JSON.parse(this.responseText);
+                    renderAgentEntries(entries);
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/user", true);
+            xmlHttp.send();
+        }
+        function renderUserEntries(entries) {
+            var entry_list = document.getElementById("user_list");
+            entry_list.innerHTML = "";
+            for (var entry of entries) {
+                var entry_html = "<li>" + entry.id + ": " + entry.name + " - " + entry.access + "</li>";
+                entry_list.innerHTML += entry_html;
+            }
+            user_id.value = "";
+            user_name.value = "";
+            user_role.value = "";
+            find_id.value = "";
+        }
+        function findUser() {
+            console.log("find");
+            var id = document.getElementById("find_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.onreadystatechange = function () {
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    var entry = JSON.parse(this.responseText);
+                    user_id.value = entry.id;
+                    user_name.value = entry.name;
+                    user_role.value = entry.access;
+                }
+            }
+            xmlHttp.open("GET", "http://localhost:8080/user/" + id, true);
+            xmlHttp.send();
+        }
+        function deleteUser() {
+            console.log("into delete");
+            var id = document.getElementById("user_id").value;
+            var xmlHttp = new XMLHttpRequest();
+            xmlHttp.open("DELETE", "http://localhost:8080/user/" + id);
+            xmlHttp.setRequestHeader("Authorization", authHeaderValue);
+            xmlHttp.setRequestHeader("Content-Type", "application/json");
+            xmlHttp.onreadystatechange = function() {
+                console.log("ready state: ", this.status);
+                if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
+                    //the entry was created
+                    document.getElementById("lblMsg").innerHTML = "User deleted";
+                    getAgentEntries();
+                }
+                else if (this.readyState == XMLHttpRequest.DONE && this.status == 401) {
+                    //the entry was not created
+                    document.getElementById("lblMsg").innerHTML = "You are not logged in";
+                }
+                else if (this.readyState == XMLHttpRequest.DONE && this.status == 403) {
+                    //the entry was not created
+                    document.getElementById("lblMsg").innerHTML = "You are not authorized to delete a user";
+                }
+
+            }
+            xmlHttp.send();
+        }
+
         
         //Agent Methods
         function createAgent() {
@@ -363,7 +500,7 @@
 
 
 
-        window.onload = function() { getAgentEntries();getWeaponEntries();getMapEntries(); }
+        window.onload = function() { getAgentEntries();getWeaponEntries();getMapEntries();getUserEntries();} //when the page loads, get the entries }
     </script>
     <style>
     body {font-family: Arial;}
@@ -409,9 +546,38 @@
     <body>
     
     <div class="tab">
+      <button class="tablinks" onclick="openTab(event, 'Users')">Users</button>
       <button class="tablinks" onclick="openTab(event, 'Agents')">Agents</button>
       <button class="tablinks" onclick="openTab(event, 'Weapons')">Weapons</button>
       <button class="tablinks" onclick="openTab(event, 'Maps')">Maps</button>
+    </div>
+
+    <div id="Users" class="tabcontent">
+        <h3>Users</h3>
+        <div>
+            <ul id="user_list"></ul>
+        </div>
+        <div>
+            <label>ID:</label>
+            <input type="text" id="user_id" />
+            <br/>
+            <label>Username:</label>
+            <input type="text" id="user_name" />
+            <br>
+            <label>password:</label>
+            <input type="text" id="user_password"/>
+            <br>
+            <label>Role:</label>
+            <select id="user_role">
+                <option value="USER">User</option>
+                <option value="ADMIN">Admin</option>
+            </select>
+            <button onclick="createUser();">Add Entry</button>
+            <button onclick="updateUser();">Update Entry</button>
+            <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_id" />
+            <button onclick="findUser();">Find</button>
+            <button onclick="deleteUser();">Delete</button>
+        </div>
     </div>
     
     <div id="Agents" class="tabcontent">
@@ -505,7 +671,11 @@
 
         <button onclick="login();">Login</button>
     </div>
-    <div id ="lblMsg"></div>
+
+    <div id ="lblMsg">
+    </div>
+    <button onclick="showLoginForm(true);">Logout</button>
+
     
         <script>
             function openTab(evt, cityName) {
