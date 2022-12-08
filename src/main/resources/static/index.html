@@ -87,7 +87,7 @@
 
             //ajax
             var xmlHttp = new XMLHttpRequest();
-            xmlHttp.open("PUT", "http://localhost:8080/agent/" + id);
+            xmlHttp.open("PUT", "http://localhost:8080/user/" + id);
             xmlHttp.setRequestHeader("Authorization", authHeaderValue);
             xmlHttp.setRequestHeader("Content-Type", "application/json");
             xmlHttp.onreadystatechange = function() {
@@ -95,7 +95,7 @@
                 if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
                     //the entry was created
                     document.getElementById("lblMsg").innerHTML = "User updated";
-                    getAgentEntries();
+                    getUserEntries();
                 }
                 else if (this.readyState == XMLHttpRequest.DONE && this.status == 401) {
                     //the entry was not created
@@ -113,7 +113,7 @@
             xmlHttp.onreadystatechange = function() {
                 if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
                     var entries = JSON.parse(this.responseText);
-                    renderAgentEntries(entries);
+                    renderUserEntries(entries);
                 }
             }
             xmlHttp.open("GET", "http://localhost:8080/user", true);
@@ -129,11 +129,11 @@
             user_id.value = "";
             user_name.value = "";
             user_role.value = "";
-            find_id.value = "";
+            find_user_id.value = "";
         }
         function findUser() {
             console.log("find");
-            var id = document.getElementById("find_id").value;
+            var id = document.getElementById("find_user_id").value;
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = function () {
                 if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
@@ -245,11 +245,11 @@
             agent_id.value = "";
             agent_name.value = "";
             agent_role.value = "";
-            find_id.value = "";
+            find_agent_id.value = "";
         }
         function findAgent() {
             console.log("find");
-            var id = document.getElementById("find_id").value;
+            var id = document.getElementById("find_agent_id").value;
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.onreadystatechange = function () {
                 if (this.readyState == XMLHttpRequest.DONE && this.status == 200) {
@@ -264,7 +264,7 @@
         }
         function deleteAgentEntry() {
             console.log("into delete");
-            var id = document.getElementById("find_id").value;
+            var id = document.getElementById("find_agent_id").value;
             var xmlHttp = new XMLHttpRequest();
             xmlHttp.open("DELETE", "http://localhost:8080/agent/" + id);
             xmlHttp.setRequestHeader("Authorization", authHeaderValue);
@@ -574,7 +574,7 @@
             </select>
             <button onclick="createUser();">Add Entry</button>
             <button onclick="updateUser();">Update Entry</button>
-            <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_id" />
+            <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_user_id" />
             <button onclick="findUser();">Find</button>
             <button onclick="deleteUser();">Delete</button>
         </div>
@@ -600,7 +600,7 @@
               </select>
             <button onclick="createAgent();">Add Entry</button>
             <button onclick="updateAgent();">Update Entry</button>
-            <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_id" />
+            <br /><br />id: &nbsp;<input type="text" style="width: 20px;" id="find_agent_id" />
             <button onclick="findAgent();">Find</button>
             <button onclick="deleteAgentEntry();">Delete</button>
         </div>
